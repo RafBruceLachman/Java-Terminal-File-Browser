@@ -5,13 +5,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathHandeler {
     private final String InitializerString = "";
-    private final String PathCannotBeFound = " cannot be found!";
+    private final String PATH_NOT_EXIST = " cannot be found!";
+    private final String DIRECTORY_IS_EMPTY = " is empty!";
 
     private Path currentPath;
     private Path absoluteCurrentPath;
@@ -37,29 +39,43 @@ public class PathHandeler {
         return currentPath;
     }
 
-    public void listDirectory(String DirectoryString){
+    public Map<String, String> listDirectory(String DirectoryString) throws FileNotFoundException{
         String CurrentDir = ".";
         Path ListPath = currentPath;
+        Map<String, String> DirectoryContentMap;
         if(!(DirectoryString.equals(CurrentDir))){
             ListPath = currentPath.resolve(DirectoryString);
         }
         try{
             Stream<Path> DirectoryContentStream = getDirectoryContentsStream(ListPath);
-            Map<Path, String> DirectoryContentMap = DirectoryContentStream
+            DirectoryContentMap = DirectoryContentStream
             .collect(
                 Collectors.toMap(
-                    ItemPath -> ItemPath, 
+                    ItemPath -> ItemPath.toString(), 
                     ItemType -> getPathItemSymbol(ItemType)
                     
                 )
             );
-            
-            DirectoryContentMap.forEach( (MapItem, ItemType) -> {
-                System.out.println(ItemType + " " + MapItem);
-            });
+            if(DirectoryContentMap.isEmpty()){
+                throw new FileNotFoundException("Directory " + ListPath+DIRECTORY_IS_EMPTY);
+            }
+        }catch(FileNotFoundException io){
+            throw new FileNotFoundException(io.getMessage());
         }catch(IOException io){
-            System.out.println(DirectoryString + PathCannotBeFound);
+            DirectoryContentMap = new HashMap<String, String>();
         }
+        return DirectoryContentMap;
+    }
+
+    public void changeCurrentDirectory(String PathString) throws FileNotFoundException{
+        boolean DirectoryExists = checkPathExist(currentPath.resolve(PathString).toString());
+        Path ToPath;
+        if(!DirectoryExists){
+            throw new FileNotFoundException(PathString+ PATH_NOT_EXIST);
+        }
+        ToPath = getPathFromString(PathString);
+        currentPath = appendPath(currentPath, ToPath);
+        updateAbsoluteCurrentDirectory();
     }
 
     private Stream<Path> getDirectoryContentsStream(Path Directory) throws IOException{
@@ -80,6 +96,12 @@ public class PathHandeler {
         }
         return IsFile;
     }
+
+    public boolean checkPathExist(String PathString){
+        Path path = getPathFromString(PathString);
+        boolean PathExist = path.toFile().exists();
+        return PathExist;
+    }
     
     private String getPathItemSymbol(Path path){
         String File = "F";
@@ -90,26 +112,24 @@ public class PathHandeler {
             return Directory;
         }
     }
-
-    private Path appendPath(Path BasePath, Path AddedPath){
-        Path NewPath = BasePath.resolve(AddedPath);
-        return NewPath;
-    }
-
+    
     private Path removeLastElementPath(Path BasePath, Integer LevelsToGoUp){
         Integer StartElement = 0;
         Path NewPath = BasePath.subpath(StartElement, (BasePath.getNameCount() - LevelsToGoUp));
         return NewPath;
     }
 
-    private void updateAbsoluteCurrentDirectory(Path toDirectory) throws FileNotFoundException{
-        if(!(toDirectory.toFile().exists())){
-            throw new FileNotFoundException(toDirectory + PathCannotBeFound);
-        }
-        absoluteCurrentPath = appendPath(absoluteCurrentPath, toDirectory);
+    private Path appendPath(Path BasePath, Path AddedPath){
+        Path NewPath = BasePath.resolve(AddedPath).normalize();
+        System.out.println(NewPath);
+        return NewPath;
+    }
+    
+    private void updateAbsoluteCurrentDirectory(){
+        absoluteCurrentPath = appendPath(absoluteCurrentPath, currentPath).normalize();
     }
 
-    public String printWorkingDirectory() {
+    public String getCurrentWorkingDirectory() {
         return absoluteCurrentPath.toString();
     }
 
