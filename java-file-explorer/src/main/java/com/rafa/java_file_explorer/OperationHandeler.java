@@ -19,11 +19,15 @@ public class OperationHandeler {
         try{
             pathHandeler.listDirectory(ListThisDirectory);
         }catch(Exception e){
-            // System.out.println(e);
+            System.out.println(e);
         }
     }
 
     void printCurrentDirectory(){
         System.out.println(pathHandeler.getCurrentDirectory());
+    }
+
+    void printWorkingDirectory(){
+        System.out.println(pathHandeler.printWorkingDirectory());
     }
 }

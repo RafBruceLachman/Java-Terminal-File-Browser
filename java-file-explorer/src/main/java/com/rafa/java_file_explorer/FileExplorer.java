@@ -44,7 +44,7 @@ public class FileExplorer {
             ExplorerOperation GetChoice = ExplorerOperation.valueOf(choice.toString().toUpperCase());
             switch(GetChoice){
                 case LS -> operationHandeler.listDirectory();
-                case PWD -> operationHandeler.printCurrentDirectory();
+                case PWD -> operationHandeler.printWorkingDirectory();
                 case CD -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
                 case DEL -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
                 case MV -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
