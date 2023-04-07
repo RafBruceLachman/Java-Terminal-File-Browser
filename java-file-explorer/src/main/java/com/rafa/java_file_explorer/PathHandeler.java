@@ -1,27 +1,64 @@
 package com.rafa.java_file_explorer;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class PathHandeler {
-    String currentPathString;
+    private Path currentPath;
 
     PathHandeler(){
-        currentPathString = "";
+        currentPath = initializeCurrentPath();
     }
 
     private Path getPathFromString(String path){
-        Path ReturnedPath = Path.of(path);
+        Path ReturnedPath = Paths.get(path);
         return ReturnedPath;
     }
 
-    String getCurrentPath(){
-        Path currentPath = Path.of(currentPathString);
-        return currentPath.toAbsolutePath().toString();
+    private Path initializeCurrentPath(){
+        final String InitializerString = "";
+        Path initialPath = Paths.get(InitializerString).toAbsolutePath();
+        return initialPath;
     }
 
-    String listDirectory(String DirectoryString){
-        Path ListPath = getPathFromString(DirectoryString);
-        return "placeholder";
+    private Path getCurrentPath(){
+        return currentPath;
+    }
+
+    String getCurrentDirectory(){
+        String currentPath = getCurrentPath().toString();
+        return currentPath;
+    }
+
+    void listDirectory(String DirectoryString){
+        String CurrentDir = ".";
+        Path ListPath = currentPath;
+        if(!(DirectoryString.equals(CurrentDir))){
+            // ListPath
+            ListPath = currentPath.resolve(DirectoryString);
+            if(ListPath.toFile().isFile()){
+                System.out.println(ListPath.toAbsolutePath());
+                return;
+            }
+        }
+        printDirectoryContents(ListPath);
+        // ListPath = getPathFromString(DirectoryString);
+        // return "placeholder";
+    }
+
+    private void printDirectoryContents(Path Directory){
+        try(Stream<Path> contentStream = Files.list(Directory)){
+            contentStream.forEach(item -> System.out.println(item));
+        }catch(IOException io){
+            System.out.println("Given directory doesn't exist.");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     Path appendPath(Path BasePath, Path AddedPath){

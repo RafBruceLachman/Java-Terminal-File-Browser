@@ -6,8 +6,7 @@ public class OperationHandeler {
     PathHandeler pathHandeler;
     final String LsPromptMessage = """
         Insert name of directory to get content from.
-        Insert . for current directory.
-        """;
+        Insert . for current directory.""";
 
     OperationHandeler(){
         pathHandeler = new PathHandeler();
@@ -17,16 +16,14 @@ public class OperationHandeler {
         Scanner ListInput = new Scanner(System.in);
         System.out.println(LsPromptMessage);
         String ListThisDirectory = ListInput.nextLine();
-        String ContentDirectory;
         try{
             pathHandeler.listDirectory(ListThisDirectory);
         }catch(Exception e){
-            System.out.println(e);
+            // System.out.println(e);
         }
-        ListInput.close();
     }
 
     void printCurrentDirectory(){
-        System.out.println(pathHandeler.getCurrentPath());
+        System.out.println(pathHandeler.getCurrentDirectory());
     }
 }
