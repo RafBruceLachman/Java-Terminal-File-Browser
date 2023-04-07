@@ -1,10 +1,12 @@
 package com.rafa.java_file_explorer;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathHandeler {
@@ -43,23 +45,53 @@ public class PathHandeler {
         String CurrentDir = ".";
         Path ListPath = currentPath;
         if(!(DirectoryString.equals(CurrentDir))){
-            // ListPath
             ListPath = currentPath.resolve(DirectoryString);
-            if(ListPath.toFile().isFile()){
-                System.out.println(ListPath);
-                return;
-            }
         }
-        printDirectoryContents(ListPath);
+        try{
+            Stream<Path> DirectoryContentStream = getDirectoryContentsStream(ListPath);
+            Map<Path, String> DirectoryContentMap = DirectoryContentStream
+            .collect(
+                Collectors.toMap(
+                    ItemPath -> ItemPath, 
+                    ItemType -> getPathItemSymbol(ItemType)
+                    
+                )
+            );
+            
+            DirectoryContentMap.forEach( (MapItem, ItemType) -> {
+                System.out.println(ItemType + " " + MapItem);
+            });
+        }catch(IOException io){
+            System.out.println(DirectoryString + PathCannotBeFound);
+        }
     }
 
-    private void printDirectoryContents(Path Directory){
-        try(Stream<Path> contentStream = Files.list(Directory)){
-            contentStream.forEach(item -> System.out.println(item));
-        }catch(IOException io){
-            System.out.println(Directory+PathCannotBeFound);
-        }catch(Exception e){
-            e.printStackTrace();
+    private Stream<Path> getDirectoryContentsStream(Path Directory) throws IOException{
+        Stream<Path> DirectoryContentStream = Files.list(Directory);
+        return DirectoryContentStream;
+    }
+
+    public boolean isPathFile(String pathString){
+        Path path = Paths.get(pathString);
+        boolean IsFile = isPathFile(path);
+        return IsFile;
+    }
+
+    private boolean isPathFile(Path path){
+        boolean IsFile = false;
+        if(path.toFile().isFile()){
+            IsFile = true;
+        }
+        return IsFile;
+    }
+
+    private String getPathItemSymbol(Path path){
+        String File = "F";
+        String Directory = "D";
+        if(isPathFile(path)){
+            return File;
+        }else{
+            return Directory;
         }
     }
 
@@ -74,10 +106,9 @@ public class PathHandeler {
         return NewPath;
     }
 
-    private void updateAbsoluteCurrentDirectory(Path toDirectory){
+    private void updateAbsoluteCurrentDirectory(Path toDirectory) throws FileNotFoundException{
         if(!(toDirectory.toFile().exists())){
-            System.out.println(toDirectory  + PathCannotBeFound);
-            return;
+            throw new FileNotFoundException(toDirectory + PathCannotBeFound);
         }
         absoluteCurrentPath = appendPath(absoluteCurrentPath, toDirectory);
     }
