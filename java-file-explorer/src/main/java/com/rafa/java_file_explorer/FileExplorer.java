@@ -3,10 +3,8 @@ package com.rafa.java_file_explorer;
 import java.util.Scanner;
 
 public class FileExplorer {
-    Boolean KeepProgramRunning;
-    StringBuilder currentPath;
-    PathHandeler pathHandeler;
-    OperationHandeler operationHandeler;
+    private Boolean KeepProgramRunning;
+    private OperationHandeler operationHandeler;
 
     static final String OPERATION_DISPLAY_MESSAGE = """
                 ls: list files in current directory or specified directory/file
@@ -15,16 +13,12 @@ public class FileExplorer {
                 mv: move file/directory
                 ren: rename file/directory
                 del: delete file/directory
-                exit: exit program
-            """;
+                exit: exit program""";
     static final String WELCOME_MESSAGE = """
             Welcome.
-            Type help for possible operations.
-            """;
+            Type help for possible operations.""";
 
     FileExplorer(){
-        currentPath = new StringBuilder();
-        pathHandeler = new PathHandeler();
         operationHandeler = new OperationHandeler();
 
         KeepProgramRunning = true;
@@ -49,11 +43,8 @@ public class FileExplorer {
         try{
             ExplorerOperation GetChoice = ExplorerOperation.valueOf(choice.toString().toUpperCase());
             switch(GetChoice){
-                case LS -> {
-                    operationHandeler.listDirectory();
-                    System.out.println(GetChoice);
-                }
-                case PWD -> operationHandeler.printCurrentDirectory();
+                case LS -> operationHandeler.listDirectory();
+                case PWD -> operationHandeler.printWorkingDirectory();
                 case CD -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
                 case DEL -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
                 case MV -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
