@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,29 +38,27 @@ public class PathHandeler {
         return currentPath;
     }
 
-    public void listDirectory(String DirectoryString){
+    public Map<String, String> listDirectory(String DirectoryString){
         String CurrentDir = ".";
         Path ListPath = currentPath;
+        Map<String, String> DirectoryContentMap;
         if(!(DirectoryString.equals(CurrentDir))){
             ListPath = currentPath.resolve(DirectoryString);
         }
         try{
             Stream<Path> DirectoryContentStream = getDirectoryContentsStream(ListPath);
-            Map<Path, String> DirectoryContentMap = DirectoryContentStream
+            DirectoryContentMap = DirectoryContentStream
             .collect(
                 Collectors.toMap(
-                    ItemPath -> ItemPath, 
+                    ItemPath -> ItemPath.toString(), 
                     ItemType -> getPathItemSymbol(ItemType)
                     
                 )
             );
-            
-            DirectoryContentMap.forEach( (MapItem, ItemType) -> {
-                System.out.println(ItemType + " " + MapItem);
-            });
         }catch(IOException io){
-            System.out.println(DirectoryString + PathCannotBeFound);
+            DirectoryContentMap = new HashMap<String, String>();
         }
+        return DirectoryContentMap;
     }
 
     private Stream<Path> getDirectoryContentsStream(Path Directory) throws IOException{
@@ -79,6 +78,12 @@ public class PathHandeler {
             IsFile = true;
         }
         return IsFile;
+    }
+
+    public boolean checkPathExist(String PathString){
+        Path path = getPathFromString(PathString);
+        boolean PathExist = path.toFile().exists();
+        return PathExist;
     }
     
     private String getPathItemSymbol(Path path){
