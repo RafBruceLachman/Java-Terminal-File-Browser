@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 public class PathHandeler {
     private final String InitializerString = "";
     private final String PATH_NOT_EXIST = " cannot be found!";
+    private final String DIRECTORY_IS_EMPTY = " is empty!";
 
     private Path currentPath;
     private Path absoluteCurrentPath;
@@ -38,7 +39,7 @@ public class PathHandeler {
         return currentPath;
     }
 
-    public Map<String, String> listDirectory(String DirectoryString){
+    public Map<String, String> listDirectory(String DirectoryString) throws FileNotFoundException{
         String CurrentDir = ".";
         Path ListPath = currentPath;
         Map<String, String> DirectoryContentMap;
@@ -55,6 +56,11 @@ public class PathHandeler {
                     
                 )
             );
+            if(DirectoryContentMap.isEmpty()){
+                throw new FileNotFoundException("Directory " + ListPath+DIRECTORY_IS_EMPTY);
+            }
+        }catch(FileNotFoundException io){
+            throw new FileNotFoundException(io.getMessage());
         }catch(IOException io){
             DirectoryContentMap = new HashMap<String, String>();
         }
@@ -62,7 +68,7 @@ public class PathHandeler {
     }
 
     public void changeCurrentDirectory(String PathString) throws FileNotFoundException{
-        boolean DirectoryExists = checkPathExist(PathString);
+        boolean DirectoryExists = checkPathExist(currentPath.resolve(PathString).toString());
         Path ToPath;
         if(!DirectoryExists){
             throw new FileNotFoundException(PathString+ PATH_NOT_EXIST);
@@ -106,20 +112,21 @@ public class PathHandeler {
             return Directory;
         }
     }
-
-    private Path appendPath(Path BasePath, Path AddedPath){
-        Path NewPath = BasePath.resolve(AddedPath).normalize();
-        return NewPath;
-    }
-
+    
     private Path removeLastElementPath(Path BasePath, Integer LevelsToGoUp){
         Integer StartElement = 0;
         Path NewPath = BasePath.subpath(StartElement, (BasePath.getNameCount() - LevelsToGoUp));
         return NewPath;
     }
 
+    private Path appendPath(Path BasePath, Path AddedPath){
+        Path NewPath = BasePath.resolve(AddedPath).normalize();
+        System.out.println(NewPath);
+        return NewPath;
+    }
+    
     private void updateAbsoluteCurrentDirectory(){
-        absoluteCurrentPath = appendPath(absoluteCurrentPath, currentPath);
+        absoluteCurrentPath = appendPath(absoluteCurrentPath, currentPath).normalize();
     }
 
     public String getCurrentWorkingDirectory() {

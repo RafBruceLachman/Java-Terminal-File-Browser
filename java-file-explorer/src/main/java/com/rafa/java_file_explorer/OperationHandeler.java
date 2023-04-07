@@ -36,17 +36,18 @@ public class OperationHandeler {
             if(IsPathFile){
                 System.out.println("F " + ListThisPath);
                 return;
+            
             }
             DirectoryMap = pathHandeler.listDirectory(ListThisPath);
-            if(DirectoryMap.isEmpty()){
-                System.out.println(ListThisPath + PATH_NOT_FOUND);
-            }
+
             DirectoryMap.forEach((DirectoryPath, PathType) -> {
                     System.out.println(PathType + " " + DirectoryPath);
                 }
             );
+        }catch(FileNotFoundException f){
+            System.out.println(f.getMessage());
         }catch(Exception e){
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
