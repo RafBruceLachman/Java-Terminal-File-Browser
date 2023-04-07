@@ -1,5 +1,6 @@
 package com.rafa.java_file_explorer;
 
+import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -57,7 +58,12 @@ public class OperationHandeler {
             System.out.println(ChangeToPath+PATH_IS_FILE);
             return;
         }
-
+        try{
+            pathHandeler.changeCurrentDirectory(ChangeToPath);
+            System.out.println(pathHandeler.getCurrentDirectory());
+        }catch(FileNotFoundException f){
+            System.out.println(f.getMessage());
+        }
     }
 
     void printCurrentDirectory(){
@@ -65,6 +71,6 @@ public class OperationHandeler {
     }
 
     void printWorkingDirectory(){
-        System.out.println(pathHandeler.printWorkingDirectory());
+        System.out.println(pathHandeler.getCurrentWorkingDirectory());
     }
 }

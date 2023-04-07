@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class PathHandeler {
     private final String InitializerString = "";
-    private final String PathCannotBeFound = " cannot be found!";
+    private final String PATH_NOT_EXIST = " cannot be found!";
 
     private Path currentPath;
     private Path absoluteCurrentPath;
@@ -61,6 +61,17 @@ public class PathHandeler {
         return DirectoryContentMap;
     }
 
+    public void changeCurrentDirectory(String PathString) throws FileNotFoundException{
+        boolean DirectoryExists = checkPathExist(PathString);
+        Path ToPath;
+        if(!DirectoryExists){
+            throw new FileNotFoundException(PathString+ PATH_NOT_EXIST);
+        }
+        ToPath = getPathFromString(PathString);
+        currentPath = appendPath(currentPath, ToPath);
+        updateAbsoluteCurrentDirectory();
+    }
+
     private Stream<Path> getDirectoryContentsStream(Path Directory) throws IOException{
         Stream<Path> DirectoryContentStream = Files.list(Directory);
         return DirectoryContentStream;
@@ -97,7 +108,7 @@ public class PathHandeler {
     }
 
     private Path appendPath(Path BasePath, Path AddedPath){
-        Path NewPath = BasePath.resolve(AddedPath);
+        Path NewPath = BasePath.resolve(AddedPath).normalize();
         return NewPath;
     }
 
@@ -107,14 +118,11 @@ public class PathHandeler {
         return NewPath;
     }
 
-    private void updateAbsoluteCurrentDirectory(Path toDirectory) throws FileNotFoundException{
-        if(!(toDirectory.toFile().exists())){
-            throw new FileNotFoundException(toDirectory + PathCannotBeFound);
-        }
-        absoluteCurrentPath = appendPath(absoluteCurrentPath, toDirectory);
+    private void updateAbsoluteCurrentDirectory(){
+        absoluteCurrentPath = appendPath(absoluteCurrentPath, currentPath);
     }
 
-    public String printWorkingDirectory() {
+    public String getCurrentWorkingDirectory() {
         return absoluteCurrentPath.toString();
     }
 
