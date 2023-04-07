@@ -7,6 +7,7 @@ public class FileExplorer {
     private OperationHandeler operationHandeler;
 
     static final String OPERATION_DISPLAY_MESSAGE = """
+            Possible Operations:
                 ls: list files in current directory or specified directory/file
                 pwd: print the current directory
                 cd: change directory
@@ -45,14 +46,14 @@ public class FileExplorer {
             switch(GetChoice){
                 case LS -> operationHandeler.listDirectory();
                 case PWD -> operationHandeler.printWorkingDirectory();
-                case CD -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
-                case DEL -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
+                case CD -> operationHandeler.changeDirectory();
                 case MV -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
                 case REN -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
+                case DEL -> throw new UnsupportedOperationException("Unimplemented case: " + GetChoice);
                 case EXIT -> {
                     exitProgram();
                 }
-                case HELP -> System.out.println("Possible Operations: \n"+OPERATION_DISPLAY_MESSAGE);
+                case HELP -> System.out.println(OPERATION_DISPLAY_MESSAGE);
                 default -> throw new IllegalArgumentException("Unexpected value: " + GetChoice);
             }
         }catch(IllegalArgumentException e){

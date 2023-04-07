@@ -5,8 +5,8 @@ import java.util.Scanner;
 public class OperationHandeler {
     PathHandeler pathHandeler;
 
-    final String LsPromptMessage = """
-        Insert path. (Use . for current directory)""";
+    final String LS_PROMPT_MESSAGE = "Insert path. (Use . for current directory)";
+    final String CD_PROMPT_MESSAGE = "Change to directory: ";
 
     Scanner UserInput;
 
@@ -16,7 +16,7 @@ public class OperationHandeler {
     }
 
     void listDirectory(){
-        System.out.println(LsPromptMessage);
+        System.out.println(LS_PROMPT_MESSAGE);
         String ListThisPath = UserInput.nextLine();
         
         try{
@@ -29,6 +29,10 @@ public class OperationHandeler {
         }catch(Exception e){
             System.out.println(e);
         }
+    }
+
+    void changeDirectory(){
+        System.out.println(CD_PROMPT_MESSAGE);
     }
 
     void printCurrentDirectory(){

@@ -31,11 +31,7 @@ public class PathHandeler {
         Path initialPath = Paths.get(InitializerString).toAbsolutePath();
         return initialPath;
     }
-
-    private Path getCurrentPath(){
-        return currentPath;
-    }
-
+    
     public String getCurrentDirectory(){
         String currentPath = getCurrentPath().toString();
         return currentPath;
@@ -84,7 +80,7 @@ public class PathHandeler {
         }
         return IsFile;
     }
-
+    
     private String getPathItemSymbol(Path path){
         String File = "F";
         String Directory = "D";
@@ -115,5 +111,9 @@ public class PathHandeler {
 
     public String printWorkingDirectory() {
         return absoluteCurrentPath.toString();
+    }
+
+    private Path getCurrentPath(){
+        return currentPath;
     }
 }
