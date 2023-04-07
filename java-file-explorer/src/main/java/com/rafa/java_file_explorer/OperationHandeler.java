@@ -4,20 +4,28 @@ import java.util.Scanner;
 
 public class OperationHandeler {
     PathHandeler pathHandeler;
+
     final String LsPromptMessage = """
-        Insert name of directory to get content from.
-        Insert . for current directory.""";
+        Insert path. (Use . for current directory)""";
+
+    Scanner UserInput;
 
     OperationHandeler(){
         pathHandeler = new PathHandeler();
+        UserInput = new Scanner(System.in);
     }
 
     void listDirectory(){
-        Scanner ListInput = new Scanner(System.in);
         System.out.println(LsPromptMessage);
-        String ListThisDirectory = ListInput.nextLine();
+        String ListThisPath = UserInput.nextLine();
+        
         try{
-            pathHandeler.listDirectory(ListThisDirectory);
+            Boolean IsPathFile = pathHandeler.isPathFile(ListThisPath);
+            if(IsPathFile){
+                System.out.println("F " + ListThisPath);
+                return;
+            }
+            pathHandeler.listDirectory(ListThisPath);
         }catch(Exception e){
             System.out.println(e);
         }
